@@ -1,23 +1,15 @@
 ---
 name: pr-sequence-diagram
-description: Emits a high-level Mermaid sequence diagram of the work done in a PR (diff vs. base branch) inline in the chat response — ideally as the opening of a review so a reader grasps the motive in 5-15 seconds before reading the notes. Use whenever the user wants to visualize a PR, see "what this branch does", or has invoked `/review` / `/security-review`. Trigger on phrases like "diagram this PR", "show the flow of these changes", "visualize the branch", "sequence diagram for the diff", "walk me through this branch", "what does this PR do", or any request to summarise a branch's behavior visually. The output belongs in the chat, not a sidecar file (the `.claude/pr-diagrams/` sidecar is optional and produced only if the user explicitly asks to pin/share the artefact).
+description: Emits a high-level Mermaid sequence diagram of the work done in a PR (diff vs. base branch) so a reader grasps the motive in 5-15 seconds. Use whenever the user wants to visualize a PR, see "what this branch does", or has invoked `/review` / `/security-review`. Trigger on phrases like "diagram this PR", "show the flow of these changes", "visualize the branch", "sequence diagram for the diff", "walk me through this branch", "what does this PR do", or any request to summarise a branch's behavior visually.
 ---
 
 # PR Sequence Diagram
 
 ## Purpose
 
-A reviewer opening a PR needs to understand the *motive* of the change in seconds — not line-by-line, but "user clicks X, which now also does Y before Z". A dense or exhaustive diagram defeats that purpose. This skill emits a one-glance Mermaid sequence diagram that captures the dominant flow the PR introduces or changes, rendered **inline in the chat response**.
+A reviewer opening a PR needs to understand the *motive* of the change in seconds — not line-by-line, but "user clicks X, which now also does Y before Z". A dense or exhaustive diagram defeats that purpose. This skill emits a one-glance Mermaid sequence diagram that captures the dominant flow the PR introduces or changes.
 
 The diagram is a **summary artefact**, not a trace. It is OK — and expected — to omit most of the diff. Pick the flow that best explains why the PR exists.
-
-## Where the diagram goes
-
-**Inline in the chat response.** Not a sidecar file. The Mermaid code-fence renders in Claude.ai, the Claude Code UI, the GitHub/GitLab PR description, and any markdown viewer — so putting it in the message is the most broadly useful form.
-
-- **If the user is asking for a review** (`/review`, `/security-review`, "review this PR", "walk me through this branch"): put the diagram + one-sentence motive caption **first**, *before* the line-by-line notes. The reviewer gets oriented, then reads.
-- **If the user only asked for a diagram**: emit the caption + diagram and stop — no need to also write review notes.
-- **Only write a file** (`.claude/pr-diagrams/<branch>.md`) if the user asks for a pinnable copy (e.g. "I want to paste this into the PR description" or "save it so I can share it").
 
 ## Inputs
 
@@ -64,9 +56,9 @@ Prefer verbs and business nouns over method names. `submit order` > `POST /order
 
 `alt`/`opt` blocks are fine but spend them sparingly — every block eats into the glance budget.
 
-### 4. Write the caption (one sentence, above the diagram)
+### 4. Write the caption
 
-Plain-English motive. Not a commit-message rehash. Examples:
+Plain-English motive. One sentence, ~15-25 words. If it runs longer you're describing the **what**, not the **why** — compress. Not a commit-message rehash. Examples:
 
 - "Adds a Stripe webhook path so subscription cancellations from the Stripe dashboard propagate back into our billing state."
 - "Moves password-reset email sending off the request path and onto a background queue."
@@ -74,9 +66,9 @@ Plain-English motive. Not a commit-message rehash. Examples:
 
 If you can't write this sentence confidently from the diff, re-read the diff; don't guess.
 
-### 5. Emit inline
+### 5. Emit the artefact
 
-Format in the chat response:
+Output the caption followed by a Mermaid sequence-diagram code fence:
 
 ```
 <H2 or H3 heading — PR title or "What this PR does">
@@ -97,19 +89,14 @@ sequenceDiagram
  e.g. error paths, legacy fallback, staged rollout. Skip if not needed.>
 ```
 
-Then — if this was a review request — continue with the line-by-line review notes *after* the diagram. If it was a diagram-only request, stop here.
-
-### 6. Optional: save a pinnable copy
-
-Only if the user explicitly asked for a file. Write to `.claude/pr-diagrams/<branch>.md` (sanitize `/` → `-`), then try in order: `code <path>` → `open <path>` → `xdg-open <path>`. Print the path if none succeeds.
+That's the whole artefact. Don't also write it to a file — whatever invoked the skill (a `/review` command, a free-form question) decides where the artefact lands in the larger response.
 
 ## Design constraints (hard)
 
 - **≤6 participants**
 - **≤10 arrows**
-- **One-sentence caption** above the diagram (plain English, describes the *why*)
+- **One-sentence caption**, ~15-25 words (plain English, describes the *why*)
 - **No filenames or method signatures** in arrow labels — verbs and business nouns only
-- **Diagram comes first** in a review — not buried after paragraphs of notes
 
 If the diff genuinely can't be compressed to these limits without losing meaning, pick the dominant flow and note in one line *below the diagram* that other flows were omitted. Don't produce a sprawling diagram "to be thorough" — that defeats the glance-budget.
 
@@ -118,7 +105,8 @@ If the diff genuinely can't be compressed to these limits without losing meaning
 - `participant X as Display Name` when the short name differs from the label.
 - `->>` synchronous call/request, `-->>` response/async reply.
 - `Note over X,Y: text` for brief annotations — sparingly.
-- `alt`/`else`/`end` branches, `loop ... end` iterations, `par ... and ... end` parallel — sparingly.
+- Avoid activation bars (`->>+` / `-->>-`) unless a call's lifetime is the point of the story — they add ink without adding meaning in most sketches.
+- At most one `alt`/`opt`/`loop`/`par` block per diagram — every block eats the glance budget. If you need more than one, your flow is too complex for a summary diagram; compress or pick a narrower slice.
 
 ## Edge cases
 

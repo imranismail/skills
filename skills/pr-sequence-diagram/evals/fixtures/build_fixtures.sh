@@ -9,7 +9,7 @@ cd "$FIXTURES_DIR"
 export GIT_CONFIG_GLOBAL=/dev/null
 gitq() { git -c user.email=bot@example.com -c user.name=Bot "$@" >/dev/null; }
 
-rm -rf node-api-stripe-cancel python-queue-welcome-emails react-onboarding-flag
+rm -rf node-api-stripe-cancel python-queue-welcome-emails react-onboarding-flag pure-refactor trivial-docs
 
 ############################################
 # Fixture 1: node-api-stripe-cancel
@@ -513,6 +513,159 @@ After successful login, the app now checks the 'new-onboarding' flag
 and routes first-run users through a 3-step onboarding flow when the
 flag is enabled. Falls back to the existing dashboard route otherwise
 so we can safely dark-launch to a cohort."
+
+cd "$FIXTURES_DIR"
+
+############################################
+# Fixture 4: pure-refactor (should NOT diagram)
+############################################
+mkdir -p pure-refactor
+cd pure-refactor
+gitq init -b main
+
+cat > db.py <<'EOF'
+import os
+import psycopg
+
+def _conn():
+    return psycopg.connect(os.environ["DATABASE_URL"])
+
+def get_user(user_id: int):
+    with _conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, email FROM users WHERE id = %s", (user_id,))
+            row = cur.fetchone()
+            return {"id": row[0], "email": row[1]} if row else None
+
+def create_user(email: str, password_hash: str):
+    with _conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO users (email, password_hash) VALUES (%s, %s) RETURNING id",
+                (email, password_hash),
+            )
+            (user_id,) = cur.fetchone()
+            return {"id": user_id, "email": email}
+EOF
+
+cat > app.py <<'EOF'
+from flask import Flask, request, jsonify
+from werkzeug.security import generate_password_hash
+from db import create_user, get_user
+
+app = Flask(__name__)
+
+@app.get("/users/<int:user_id>")
+def read_user(user_id):
+    user = get_user(user_id)
+    if not user:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(user)
+
+@app.post("/signup")
+def signup():
+    data = request.get_json()
+    user = create_user(data["email"], generate_password_hash(data["password"]))
+    return jsonify({"id": user["id"]}), 201
+EOF
+
+gitq add .
+gitq commit -m "initial app"
+
+gitq checkout -b rename-db-module
+
+# Rename db.py -> database.py and update imports. No runtime change.
+gitq mv db.py database.py
+
+cat > app.py <<'EOF'
+from flask import Flask, request, jsonify
+from werkzeug.security import generate_password_hash
+from database import create_user, get_user
+
+app = Flask(__name__)
+
+@app.get("/users/<int:user_id>")
+def read_user(user_id):
+    user = get_user(user_id)
+    if not user:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(user)
+
+@app.post("/signup")
+def signup():
+    data = request.get_json()
+    user = create_user(data["email"], generate_password_hash(data["password"]))
+    return jsonify({"id": user["id"]}), 201
+EOF
+
+gitq add .
+gitq commit -m "rename db module to database
+
+Pure rename. Every caller now imports from \`database\` instead of \`db\`.
+No runtime or behavioural change."
+
+cd "$FIXTURES_DIR"
+
+############################################
+# Fixture 5: trivial-docs (should NOT diagram)
+############################################
+mkdir -p trivial-docs
+cd trivial-docs
+gitq init -b main
+
+cat > README.md <<'EOF'
+# billing-api
+
+A small billing API used by the customer dashboard.
+
+## Endpoints
+
+- `GET /api/health` — liveness check
+- `GET /api/users/:id` — fetch a user by ID
+- `POST /api/subscriptions/:id/cancel` — cancel a subscription
+
+## Running localy
+
+```
+npm install
+npm start
+```
+
+The server listens on port 3000 by default.
+EOF
+
+cat > package.json <<'EOF'
+{ "name": "billing-api", "version": "0.1.0" }
+EOF
+
+gitq add .
+gitq commit -m "initial readme"
+
+gitq checkout -b fix-readme-typo
+
+cat > README.md <<'EOF'
+# billing-api
+
+A small billing API used by the customer dashboard.
+
+## Endpoints
+
+- `GET /api/health` — liveness check
+- `GET /api/users/:id` — fetch a user by ID
+- `POST /api/subscriptions/:id/cancel` — cancel a subscription
+
+## Running locally
+
+```
+npm install
+npm start
+```
+
+The server listens on port 3000 by default.
+EOF
+
+gitq add .
+gitq commit -m "fix readme typo (localy -> locally)"
 
 cd "$FIXTURES_DIR"
 

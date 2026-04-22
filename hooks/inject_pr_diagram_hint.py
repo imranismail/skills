@@ -11,23 +11,25 @@ import sys
 
 ADDITIONAL_CONTEXT = (
     "This prompt looks like a PR/branch/diff comprehension request. "
-    "Lead your response with a one-sentence motive caption and a Mermaid "
-    "sequence diagram (at most 6 participants, at most 10 arrows) via the "
-    "pr-sequence-diagram skill — emit it inline in the chat, before any "
-    "line-by-line review notes. Do not save a sidecar file unless the user "
-    "explicitly asks for a pinnable copy. Skip the diagram entirely if the "
-    "diff is trivial (pure docs, tests, formatting, typo fix) or the user "
-    "opted out."
+    "Prepend a one-sentence motive caption and a Mermaid sequence diagram "
+    "(via the `pr-sequence-diagram` skill) to your response, before the "
+    "rest of the review output. Skip if the diff is trivial (pure docs, "
+    "tests, formatting, typo fix) or the user opted out."
 )
 
 SLASH_RE = re.compile(r'(?:^|[^a-z0-9/])/(?:review|security-review)(?:\b|[^a-z0-9]|$)')
 VERB_RE = re.compile(
     r'(review|summari[sz]e|explain|walk[ -]?(?:me|through)|tl[^a-z]?;?dr'
-    r'|diagram|visuali[sz]e|motive|what[^a-z]{0,20}does)'
+    r'|diagram|visuali[sz]e|motive|what[^a-z]{0,20}does'
+    r'|understand|grok)'
 )
 NOUN_RE = re.compile(r'\b(pr|branch|diff|changes|commits|merge request|pull request)\b')
 OPT_OUT_RE = re.compile(
-    r'\b(skip|no|without)[^a-z]{0,10}(?:the )?(?:diagram|sequence diagram|visual)\b'
+    r"(?:\b(?:skip|no|without|don'?t|just)[^a-z]{0,15}"
+    r"(?:the\s+)?(?:diagram|sequence\s+diagram|mermaid|visual|picture))"
+    r"|(?:\btext[\s-]?only\b)"
+    r"|(?:\bjust\s+the\s+(?:notes|review|text))"
+    r"|(?:\bno\s+mermaid\b)"
 )
 
 
