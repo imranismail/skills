@@ -1,0 +1,26 @@
+{
+  "skill_name": "pr-sequence-diagram",
+  "evals": [
+    {
+      "id": 0,
+      "name": "backend-new-endpoint",
+      "prompt": "I'm in the repo at <FIXTURE_DIR>/node-api-stripe-cancel on branch `add-subscription-cancel`. Can you generate a sequence diagram for this PR so I can glance at it before I dig into the review? Base branch is `main`.",
+      "expected_output": "A .md file at .claude/pr-diagrams/add-subscription-cancel.md with a 1-sentence motive caption and a Mermaid sequenceDiagram showing the cancel flow across User/Client, API, Postgres, Stripe, and an email service. Participants <=6, arrows <=10, no filenames/method signatures in labels.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "backend-refactor-to-queue",
+      "prompt": "Just finished reviewing this queue-welcome-emails branch vs main in <FIXTURE_DIR>/python-queue-welcome-emails and I want a quick sequence diagram to pin to the PR description. Give me the motive of the change visually.",
+      "expected_output": "A .md file at .claude/pr-diagrams/queue-welcome-emails.md. Caption should describe the decoupling of email sending from the signup request. Diagram should include User, API, Postgres, Redis/Queue, Worker, SMTP. Clearly shows that signup responds before email is sent.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "frontend-feature-flag",
+      "prompt": "Can you diagram the flow of the add-onboarding-flag branch in <FIXTURE_DIR>/react-onboarding-flag? I want to see at a glance what the user's experience is after login now.",
+      "expected_output": "A .md file at .claude/pr-diagrams/add-onboarding-flag.md. Caption explains the feature-flag-gated onboarding. Diagram shows User -> Login -> API (login) -> API (flag check), with alt/opt branch for flag-enabled vs not.",
+      "files": []
+    }
+  ]
+}

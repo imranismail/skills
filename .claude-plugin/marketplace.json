@@ -1,0 +1,35 @@
+{
+  "name": "imrans-skills",
+  "id": "imrans-skills",
+  "owner": {
+    "name": "Imran Ismail",
+    "email": "hey@imranismail.dev",
+    "url": "https://github.com/imranismail"
+  },
+  "metadata": {
+    "description": "Imran's Skills — a personal collection of Claude Code skills",
+    "version": "0.1.0",
+    "repository": "https://github.com/imranismail/skills"
+  },
+  "plugins": [
+    {
+      "name": "pr-sequence-diagram",
+      "source": "./",
+      "description": "Renders a high-level Mermaid sequence diagram of a PR's diff vs. its base branch — a one-glance visual summary a reviewer can digest in 5-15 seconds.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Imran Ismail",
+        "email": "hey@imranismail.dev"
+      },
+      "keywords": [
+        "pr",
+        "review",
+        "diagram",
+        "mermaid",
+        "sequence-diagram",
+        "code-review"
+      ],
+      "category": "workflow"
+    }
+  ]
+}

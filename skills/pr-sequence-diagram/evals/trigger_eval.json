@@ -1,0 +1,82 @@
+[
+  {
+    "query": "/review",
+    "should_trigger": true
+  },
+  {
+    "query": "/security-review",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you review this PR and help me understand what it does? I'm on branch feat/onboarding-flow vs main.",
+    "should_trigger": true
+  },
+  {
+    "query": "Just rebased feature/async-signups onto main — before I open the PR, can you walk me through what changed?",
+    "should_trigger": true
+  },
+  {
+    "query": "What's the motive of this branch? There are 8 commits on billing-webhooks and I've lost the thread.",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm on hotfix/rate-limit-bypass — summarise the PR for me before I request a review from Alex.",
+    "should_trigger": true
+  },
+  {
+    "query": "diagram the flow of this branch so I can paste it into the PR description",
+    "should_trigger": true
+  },
+  {
+    "query": "I just ran /review — now give me a sequence diagram of the changes please",
+    "should_trigger": true
+  },
+  {
+    "query": "TL;DR this PR please, I'm looking at fix/checkout-idempotency against develop",
+    "should_trigger": true
+  },
+  {
+    "query": "What does this PR do? I need to explain it in standup in 5min",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you review this function I just wrote for parsing dates? `function parseDate(input) { ... }`",
+    "should_trigger": false
+  },
+  {
+    "query": "Help me understand the auth middleware in src/middleware/auth.ts — I'm new to this codebase",
+    "should_trigger": false
+  },
+  {
+    "query": "Draw me a sequence diagram for how OAuth 2.0 authorization code flow works in general",
+    "should_trigger": false
+  },
+  {
+    "query": "What's in the main branch? Just give me a high-level summary of the repo structure.",
+    "should_trigger": false
+  },
+  {
+    "query": "can u explain the diff between useMemo and useCallback? keep hitting perf issues",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm reviewing a paper draft on retrieval-augmented generation, can you help me make the intro more concise?",
+    "should_trigger": false
+  },
+  {
+    "query": "summarize this Slack thread for me, it's about the incident on Tuesday",
+    "should_trigger": false
+  },
+  {
+    "query": "Walk me through the docs at docs.stripe.com/api/subscriptions — I need to integrate this",
+    "should_trigger": false
+  },
+  {
+    "query": "Give me a sequence diagram of our overall payment flow, from checkout to settlement",
+    "should_trigger": false
+  },
+  {
+    "query": "Review these 12 Jira tickets and tell me which ones are duplicates of INGEST-447",
+    "should_trigger": false
+  }
+]
