@@ -2,12 +2,8 @@
 """UserPromptSubmit hook for the pr-sequence-diagram plugin.
 
 Detects prompts that ask for PR/branch/diff comprehension and injects
-context instructing Claude to invoke the pr-sequence-diagram skill
-alongside its primary response. Stays silent otherwise.
-
-Claude's built-in skill discovery doesn't reliably consult specialty
-skills for short, high-frequency queries like /review or "walk me through
-this PR" — it attempts them directly. This hook closes that gap.
+context instructing Claude to invoke the pr-sequence-diagram skill inline
+in its response. Stays silent otherwise.
 """
 import json
 import re
@@ -15,11 +11,13 @@ import sys
 
 ADDITIONAL_CONTEXT = (
     "This prompt looks like a PR/branch/diff comprehension request. "
-    "After completing the primary task, invoke the pr-sequence-diagram skill "
-    "to produce a one-glance Mermaid sequence diagram saved to "
-    ".claude/pr-diagrams/<branch>.md in the repo. Skip the diagram only if "
-    "the diff is trivial (pure docs, tests, formatting, typo fix) or if the "
-    "user explicitly opted out."
+    "Lead your response with a one-sentence motive caption and a Mermaid "
+    "sequence diagram (at most 6 participants, at most 10 arrows) via the "
+    "pr-sequence-diagram skill — emit it inline in the chat, before any "
+    "line-by-line review notes. Do not save a sidecar file unless the user "
+    "explicitly asks for a pinnable copy. Skip the diagram entirely if the "
+    "diff is trivial (pure docs, tests, formatting, typo fix) or the user "
+    "opted out."
 )
 
 SLASH_RE = re.compile(r'(?:^|[^a-z0-9/])/(?:review|security-review)(?:\b|[^a-z0-9]|$)')

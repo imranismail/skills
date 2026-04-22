@@ -1,1 +1,3 @@
 *-workspace/
+skills/pr-sequence-diagram/evals/fixtures/*/
+!skills/pr-sequence-diagram/evals/fixtures/README.md
