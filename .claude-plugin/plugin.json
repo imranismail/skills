@@ -7,10 +7,7 @@
     "email": "hey@imranismail.dev"
   },
   "license": "BlueOak-1.0.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/imranismail/skills"
-  },
+  "repository": "https://github.com/imranismail/skills",
   "homepage": "https://github.com/imranismail/skills",
   "keywords": [
     "pr",
