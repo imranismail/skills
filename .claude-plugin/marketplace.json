@@ -13,25 +13,6 @@
   },
   "plugins": [
     {
-      "name": "pr-sequence-diagram",
-      "source": "./",
-      "description": "Renders a high-level Mermaid sequence diagram of a PR's diff vs. its base branch — a one-glance visual summary a reviewer can digest in 5-15 seconds.",
-      "version": "0.1.0",
-      "author": {
-        "name": "Imran Ismail",
-        "email": "hey@imranismail.dev"
-      },
-      "keywords": [
-        "pr",
-        "review",
-        "diagram",
-        "mermaid",
-        "sequence-diagram",
-        "code-review"
-      ],
-      "category": "workflow"
-    },
-    {
       "name": "sidekick",
       "source": "./plugins/sidekick",
       "description": "A sidekick for Slack support channels. Learns a channel from its history, recalls how similar requests were resolved before from a local episode store, drafts replies, and asks the operator about anything it is unsure of.",
@@ -50,5 +31,8 @@
       ],
       "category": "workflow"
     }
-  ]
+  ],
+  "renames": {
+    "pr-sequence-diagram": null
+  }
 }
