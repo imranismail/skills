@@ -32,6 +32,7 @@
       "category": "workflow"
     }
   ],
+  "forceRemoveDeletedPlugins": true,
   "renames": {
     "pr-sequence-diagram": null
   }
