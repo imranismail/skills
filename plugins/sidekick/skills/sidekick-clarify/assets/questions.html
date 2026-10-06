@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sidekick questions</title>
+<style>
+:root { --bg:#fafaf9; --fg:#1c1917; --muted:#78716c; --card:#fff; --line:#e7e5e4; --accent:#2563eb; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1c1917; --fg:#fafaf9; --muted:#a8a29e; --card:#292524; --line:#44403c; --accent:#60a5fa; } }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 96px; }
+h1 { font-size:1.4rem; margin:0 0 4px; }
+.sub { color:var(--muted); margin:0 0 24px; }
+.q { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:16px; }
+.cat { font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+.q h2 { font-size:1.05rem; margin:4px 0 8px; }
+.ctx { font-size:.9rem; color:var(--muted); white-space:pre-wrap; border-left:3px solid var(--line); padding-left:10px; margin:0 0 12px; }
+label.opt { display:flex; gap:8px; align-items:flex-start; padding:4px 0; cursor:pointer; }
+textarea { width:100%; box-sizing:border-box; min-height:64px; margin-top:8px; padding:8px; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:6px; font:inherit; }
+.bar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line); padding:12px 16px; display:flex; gap:12px; align-items:center; justify-content:center; }
+button { background:var(--accent); color:#fff; border:0; border-radius:6px; padding:10px 18px; font:inherit; cursor:pointer; }
+#count { color:var(--muted); font-size:.9rem; }
+.empty { text-align:center; color:var(--muted); padding:48px 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sidekick questions</h1>
+  <p class="sub" id="sub"></p>
+  <div id="list"></div>
+</main>
+<div class="bar">
+  <span id="count"></span>
+  <button id="export" type="button">Export answers.json</button>
+</div>
+<script>
+const DATA = __QUESTIONS_PLACEHOLDER__;
+const list = document.getElementById('list');
+const open = DATA.questions.filter(q => q.status === 'open');
+document.getElementById('sub').textContent =
+  `Channel: ${DATA.channel}. Answer what you can, skip the rest. Export when done and tell Claude.`;
+if (!open.length) list.innerHTML = '<p class="empty">No open questions.</p>';
+for (const q of open) {
+  const el = document.createElement('section');
+  el.className = 'q';
+  el.dataset.id = q.id;
+  const cat = document.createElement('div'); cat.className = 'cat'; cat.textContent = q.category || 'general';
+  const h = document.createElement('h2'); h.textContent = q.question;
+  el.append(cat, h);
+  if (q.context) { const c = document.createElement('div'); c.className = 'ctx'; c.textContent = q.context; el.append(c); }
+  for (const o of q.options || []) {
+    const l = document.createElement('label'); l.className = 'opt';
+    const r = document.createElement('input'); r.type = 'radio'; r.name = q.id; r.value = o;
+    r.addEventListener('change', update);
+    l.append(r, document.createTextNode(o)); el.append(l);
+  }
+  if (q.allow_free_text !== false) {
+    const t = document.createElement('textarea');
+    t.placeholder = (q.options || []).length ? 'Add detail or correct the options (optional)' : 'Your answer';
+    t.addEventListener('input', update); el.append(t);
+  }
+  list.append(el);
+}
+function collect() {
+  const out = {};
+  for (const el of list.querySelectorAll('.q')) {
+    const pick = el.querySelector('input:checked');
+    const txt = el.querySelector('textarea');
+    const choice = pick ? pick.value : '';
+    const text = txt ? txt.value.trim() : '';
+    if (choice || text) out[el.dataset.id] = { choice, text, answered_at: new Date().toISOString() };
+  }
+  return out;
+}
+function update() {
+  document.getElementById('count').textContent =
+    `${Object.keys(collect()).length} of ${open.length} answered`;
+}
+document.getElementById('export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(collect(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'answers.json'; a.click();
+});
+update();
+</script>
+</body>
+</html>

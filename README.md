@@ -12,6 +12,20 @@ Renders a high-level Mermaid sequence diagram of a PR's diff vs. its base branch
 
 **Output:** a markdown file at `.claude/pr-diagrams/<branch>.md` inside the repo, opened in VS Code.
 
+### sidekick
+
+A sidekick for any Slack support channel. Nothing channel-specific is built in: it learns the channel, then serves requests from what it learned.
+
+| Skill | Purpose |
+|---|---|
+| `sidekick-setup` | Scan a channel's history and threads, build its profile, seed episodes, queue questions |
+| `sidekick-refresh` | Update the profile from messages since the last run |
+| `sidekick-oncall` | Self-paced loop over new requests: recall, draft a reply, never post |
+| `sidekick-clarify` | Local HTML page to answer the sidekick's open questions |
+| `sidekick` | Handle one request (classify, recall, serve, store), plus `status`, `forget`, `remember` |
+
+Memory is plain markdown files under `~/.claude/sidekick/<channel>/` (override with `SIDEKICK_HOME`). Recall is text search over episodes. Everything stays on your machine, and replies are drafts only.
+
 ## Installation
 
 Inside a Claude Code session:
@@ -19,6 +33,7 @@ Inside a Claude Code session:
 ```
 /plugin marketplace add imranismail/skills
 /plugin install pr-sequence-diagram@imrans-skills
+/plugin install sidekick@imrans-skills
 /reload-plugins
 ```
 
@@ -40,6 +55,10 @@ skills/
   pr-sequence-diagram/
     SKILL.md           # skill definition
     evals/             # test fixtures + trigger evals
+plugins/
+  sidekick/
+    .claude-plugin/plugin.json
+    skills/            # sidekick, sidekick-setup, -refresh, -oncall, -clarify
 ```
 
 ## Development

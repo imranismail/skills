@@ -1,0 +1,20 @@
+{
+  "name": "sidekick",
+  "description": "A sidekick for Slack support channels. Learns a channel from its history, recalls how similar requests were resolved before from a local episode store, drafts replies, and asks the operator about anything it is unsure of.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Imran Ismail",
+    "email": "hey@imranismail.dev"
+  },
+  "license": "BlueOak-1.0.0",
+  "repository": "https://github.com/imranismail/skills",
+  "homepage": "https://github.com/imranismail/skills",
+  "keywords": ["slack", "support", "oncall", "memory", "episodic-memory", "triage"],
+  "skills": [
+    "./skills/sidekick",
+    "./skills/sidekick-setup",
+    "./skills/sidekick-refresh",
+    "./skills/sidekick-oncall",
+    "./skills/sidekick-clarify"
+  ]
+}
